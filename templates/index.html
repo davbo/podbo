@@ -1,0 +1,25 @@
+<html lang="en">
+<head>
+    <title>podbo</title>
+</head>
+<body>
+    <h1>podbo</h1>
+    <ul id="podcasts">
+    {% for feed in feeds %}
+    <li><h2>{{ feed.title}}</h2></li>
+        <ul id="podcasts">
+            {% for entry in feed.entries.all() %}
+                <li>
+                <h3>{{ entry.title}}</h3>
+                <p>
+                <audio id="pod-{{entry.id}}" controls="controls" preload="metadata">
+                    <source src="{{entry.media_url}}" type="audio/mp3" />
+                </audio>
+                </p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+    </ul>
+</body>
+</html>
