@@ -1,25 +1,80 @@
 <html lang="en">
-<head>
-    <title>podbo</title>
-</head>
+    <head>
+        <title>podbo</title>
+        <link type="text/css" href="/static/skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" />
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="/static/js/jquery.jplayer.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $("#jquery_jplayer_1").jPlayer({
+                    swfPath: "/js",
+                });
+                setInterval(function() {
+                    var entry = $("#jquery_jplayer_1").attr("entry-id");
+                    if (entry) {
+                        var ct = $("#jquery_jplayer_1").data("jPlayer").status.currentTime;
+                        ct = Math.floor(ct);
+                        $.cookie('entry-'+entry, ct);
+                    }
+                }, 2000);
+                $("li[entry-media-url]").click(function () {
+                    $("#jquery_jplayer_1").jPlayer("setMedia", {mp3: $(this).attr("entry-media-url")}); 
+                    var entry = $(this).attr("entry-id");
+                    $("#jquery_jplayer_1").attr("entry-id", entry);
+                    var time = $.cookie('entry-'+entry);
+                    if (time) {
+                        $("#jquery_jplayer_1").jPlayer("play", parseInt(time));
+                    }
+                    $(".jp-title :header").text($(this).text());
+                });
+            });
+        </script>
+    </head>
 <body>
     <h1>podbo</h1>
+    <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+    <div id="jp_container_1" class="jp-audio">
+        <div class="jp-type-single">
+            <div class="jp-gui jp-interface">
+                <ul class="jp-controls">
+                    <li><a href="javascript:;" class="jp-play" tabindex="1">play</a></li>
+                    <li><a href="javascript:;" class="jp-pause" tabindex="1">pause</a></li>
+                    <li><a href="javascript:;" class="jp-stop" tabindex="1">stop</a></li>
+                    <li><a href="javascript:;" class="jp-mute" tabindex="1" title="mute">mute</a></li>
+                    <li><a href="javascript:;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>
+                    <li><a href="javascript:;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>
+                </ul>
+                <div class="jp-progress">
+                    <div class="jp-seek-bar">
+                        <div class="jp-play-bar"></div>
+                    </div>
+                </div>
+                <div class="jp-volume-bar">
+                    <div class="jp-volume-bar-value"></div>
+                </div>
+                <div class="jp-time-holder">
+                    <div class="jp-current-time"></div>
+                    <div class="jp-duration"></div>
+                </div>
+            </div>
+            <div class="jp-title">
+                <h2>
+                </h2>
+            </div>
+        </div>
+    </div>
     <ul id="podcasts">
-    {% for feed in feeds %}
-    <li><h2>{{ feed.title}}</h2></li>
+        {% for feed in feeds %}
+        <li><h2>{{ feed.title}}</h2></li>
         <ul id="podcasts">
             {% for entry in feed.entries.all() %}
-                <li>
-                <h3>{{ entry.title}}</h3>
-                <p>
-                <audio id="pod-{{entry.id}}" controls="controls" preload="metadata">
-                    <source src="{{entry.media_url}}" type="audio/mp3" />
-                </audio>
-                </p>
-                </li>
+            <li entry-media-url="{{ entry.media_url }}" entry-id="{{ entry.id }}">
+            {{ entry.title }}
+            </li>
             {% endfor %}
         </ul>
-    {% endfor %}
+        {% endfor %}
     </ul>
 </body>
 </html>
