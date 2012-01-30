@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="row">
+    {% for feed in feeds %}
+    <div class="span6">
+        <h2>{{ feed.title}}</h2>
+        <ul id="podcasts">
+            {% for entry in feed.entries.limit(5) %}
+            <li entry-media-url="{{ entry.media_url }}" entry-id="{{ entry.id }}">
+            {{ entry.title }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

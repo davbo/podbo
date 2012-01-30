@@ -1,38 +1,37 @@
-<html lang="en">
-    <head>
-        <title>podbo</title>
-        <link type="text/css" href="/static/skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" />
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
-        <script type="text/javascript" src="/static/js/jquery.jplayer.min.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $("#jquery_jplayer_1").jPlayer({
-                    swfPath: "/js",
-                });
-                setInterval(function() {
-                    var entry = $("#jquery_jplayer_1").attr("entry-id");
-                    if (entry) {
-                        var ct = $("#jquery_jplayer_1").data("jPlayer").status.currentTime;
-                        ct = Math.floor(ct);
-                        $.cookie('entry-'+entry, ct);
-                    }
+{% extends "layout.html" %}
+{% block head %}
+<link type="text/css" href="/static/skin/blue.monday/jplayer.blue.monday.css" rel="stylesheet" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/static/js/jquery.jplayer.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+            $("#jquery_jplayer_1").jPlayer({
+swfPath: "/js",
+});
+            setInterval(function() {
+                var entry = $("#jquery_jplayer_1").attr("entry-id");
+                if (entry) {
+                var ct = $("#jquery_jplayer_1").data("jPlayer").status.currentTime;
+                ct = Math.floor(ct);
+                $.cookie('entry-'+entry, ct);
+                }
                 }, 2000);
-                $("li[entry-media-url]").click(function () {
-                    $("#jquery_jplayer_1").jPlayer("setMedia", {mp3: $(this).attr("entry-media-url")}); 
-                    var entry = $(this).attr("entry-id");
-                    $("#jquery_jplayer_1").attr("entry-id", entry);
-                    var time = $.cookie('entry-'+entry);
-                    if (time) {
-                        $("#jquery_jplayer_1").jPlayer("play", parseInt(time));
-                    }
-                    $(".jp-title :header").text($(this).text());
+            $("li[entry-media-url]").click(function () {
+                $("#jquery_jplayer_1").jPlayer("setMedia", {mp3: $(this).attr("entry-media-url")}); 
+                var entry = $(this).attr("entry-id");
+                $("#jquery_jplayer_1").attr("entry-id", entry);
+                var time = $.cookie('entry-'+entry);
+                if (time) {
+                $("#jquery_jplayer_1").jPlayer("play", parseInt(time));
+                }
+                $(".jp-title :header").text($(this).text());
                 });
-            });
-        </script>
-    </head>
-<body>
-    <h1>podbo</h1>
+});
+</script>
+{% endblock %}
+{% block content %}
+<div class="hero-unit">
     <div id="jquery_jplayer_1" class="jp-jplayer"></div>
     <div id="jp_container_1" class="jp-audio">
         <div class="jp-type-single">
@@ -64,17 +63,19 @@
             </div>
         </div>
     </div>
-    <ul id="podcasts">
-        {% for feed in feeds %}
-        <li><h2>{{ feed.title}}</h2></li>
+</div>
+<div class="row">
+    {% for feed in feeds %}
+    <div class="span6">
+        <h2>{{ feed.title}}</h2>
         <ul id="podcasts">
-            {% for entry in feed.entries.all() %}
+            {% for entry in feed.entries.limit(5) %}
             <li entry-media-url="{{ entry.media_url }}" entry-id="{{ entry.id }}">
             {{ entry.title }}
             </li>
             {% endfor %}
         </ul>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
